@@ -2,7 +2,7 @@
 
 A drag-and-drop Kanban board component for Streamlit. Move cards between columns, add and edit cards with tags and priority levels, and get the full board state back as JSON.
 
-![Kanban screenshot](https://raw.githubusercontent.com/RhythrosaLabs/streamlit-kanban/main/docs/screenshot.png)
+![Kanban screenshot](https://raw.githubusercontent.com/RhythrosaLabs/streamlit-kanban/main/screenshot.png)
 
 ## Features
 
