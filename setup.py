@@ -8,7 +8,7 @@ setup(
     description="A drag-and-drop Kanban board component for Streamlit",
     long_description=open("README.md").read(),
     long_description_content_type="text/markdown",
-    url="https://github.com/yourusername/streamlit-kanban",
+    url="https://github.com/RhythrosaLabs/streamlit-kanban",
     packages=find_packages(),
     include_package_data=True,
     classifiers=[
