@@ -1,4 +1,5 @@
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
+import { Streamlit } from "streamlit-component-lib";
 
 const INITIAL_COLUMNS = [
   {
@@ -156,16 +157,16 @@ function CardModal({ card, onSave, onClose, onDelete }) {
   );
 }
 
-function KanbanCard({ card, columnId, onEdit, onDragStart, onDragEnd, isDragging }) {
+function KanbanCard({ card, columnId, onEdit, onGrab, isDragging }) {
   const p = PRIORITY_CONFIG[card.priority] || PRIORITY_CONFIG.medium;
   const t = getTagStyle(card.tag);
+  const movedRef = useRef(false);
 
   return (
     <div
-      draggable
-      onDragStart={() => onDragStart(card.id, columnId)}
-      onDragEnd={onDragEnd}
-      onClick={() => onEdit(card, columnId)}
+      onPointerDown={e => { if (e.button !== 0) return; movedRef.current = false; onGrab(e, card.id, columnId); }}
+      onPointerMove={() => { movedRef.current = true; }}
+      onClick={() => { if (!movedRef.current) onEdit(card, columnId); }}
       style={{
         background: isDragging ? "rgba(99,102,241,0.18)" : "rgba(255,255,255,0.04)",
         border: isDragging ? "1px solid rgba(99,102,241,0.5)" : "1px solid rgba(255,255,255,0.07)",
@@ -212,11 +213,10 @@ function KanbanCard({ card, columnId, onEdit, onDragStart, onDragEnd, isDragging
   );
 }
 
-function Column({ col, onAddCard, onEditCard, onDragStart, onDragEnd, onDragOver, onDrop, draggingOver, draggingId }) {
+function Column({ col, onAddCard, onEditCard, onGrab, draggingOver, draggingId }) {
   return (
     <div
-      onDragOver={e => { e.preventDefault(); onDragOver(col.id); }}
-      onDrop={() => onDrop(col.id)}
+      data-column-id={col.id}
       style={{
         width: 270, flexShrink: 0, display: "flex", flexDirection: "column",
         background: draggingOver === col.id ? "rgba(99,102,241,0.06)" : "rgba(255,255,255,0.025)",
@@ -253,8 +253,7 @@ function Column({ col, onAddCard, onEditCard, onDragStart, onDragEnd, onDragOver
             card={card}
             columnId={col.id}
             onEdit={onEditCard}
-            onDragStart={onDragStart}
-            onDragEnd={onDragEnd}
+            onGrab={onGrab}
             isDragging={draggingId === card.id}
           />
         ))}
@@ -297,40 +296,97 @@ export default function KanbanBoard() {
   // State export display
   const [showState, setShowState] = useState(false);
 
-  const handleDragStart = useCallback((cardId, columnId) => {
-    dragging.current = { cardId, columnId };
+  // ── Streamlit lifecycle ──────────────────────────────────────────────────
+  const readyRef = useRef(false);
+
+  useEffect(() => {
+    const onRender = (event) => {
+      if (!readyRef.current) {
+        const { columns: cols } = event.detail.args;
+        if (cols) setColumns(cols);
+        readyRef.current = true;
+      }
+      Streamlit.setFrameHeight();
+    };
+    Streamlit.events.addEventListener(Streamlit.RENDER_EVENT, onRender);
+    Streamlit.setComponentReady();
+    return () => Streamlit.events.removeEventListener(Streamlit.RENDER_EVENT, onRender);
+  }, []);
+
+  useEffect(() => {
+    if (readyRef.current) Streamlit.setComponentValue(columns);
+  }, [columns]);
+
+  useEffect(() => { Streamlit.setFrameHeight(); });
+
+  const ghostRef = useRef(null);
+
+  const handleGrab = useCallback((e, cardId, columnId) => {
+    e.preventDefault();
+    const el = e.currentTarget;
+    const rect = el.getBoundingClientRect();
+    dragging.current = { cardId, fromColumnId: columnId, offsetX: e.clientX - rect.left, offsetY: e.clientY - rect.top, w: rect.width };
     setDraggingId(cardId);
+
+    // Create ghost
+    const ghost = el.cloneNode(true);
+    ghost.style.position = "fixed";
+    ghost.style.width = rect.width + "px";
+    ghost.style.pointerEvents = "none";
+    ghost.style.zIndex = "9999";
+    ghost.style.opacity = "0.85";
+    ghost.style.transform = "rotate(2deg) scale(1.03)";
+    ghost.style.boxShadow = "0 16px 48px rgba(0,0,0,0.5)";
+    ghost.style.left = (e.clientX - (e.clientX - rect.left)) + "px";
+    ghost.style.top = (e.clientY - (e.clientY - rect.top)) + "px";
+    document.body.appendChild(ghost);
+    ghostRef.current = ghost;
+
+    const onMove = (ev) => {
+      if (!dragging.current) return;
+      const g = ghostRef.current;
+      if (g) {
+        g.style.left = (ev.clientX - dragging.current.offsetX) + "px";
+        g.style.top = (ev.clientY - dragging.current.offsetY) + "px";
+      }
+      // Highlight column under cursor
+      const els = document.elementsFromPoint(ev.clientX, ev.clientY);
+      const colEl = els.find(el => el.dataset && el.dataset.columnId);
+      setDraggingOver(colEl ? colEl.dataset.columnId : null);
+    };
+
+    const onUp = (ev) => {
+      window.removeEventListener("pointermove", onMove);
+      window.removeEventListener("pointerup", onUp);
+      if (ghostRef.current) { ghostRef.current.remove(); ghostRef.current = null; }
+      if (!dragging.current) return;
+      const { cardId: cid, fromColumnId } = dragging.current;
+      // Find target column
+      const els = document.elementsFromPoint(ev.clientX, ev.clientY);
+      const colEl = els.find(el => el.dataset && el.dataset.columnId);
+      const toColumnId = colEl ? colEl.dataset.columnId : null;
+
+      if (toColumnId && toColumnId !== fromColumnId) {
+        setColumns(cols => {
+          const next = cols.map(c => ({ ...c, cards: [...c.cards] }));
+          const fromCol = next.find(c => c.id === fromColumnId);
+          const toCol = next.find(c => c.id === toColumnId);
+          if (!fromCol || !toCol) return cols;
+          const cardIdx = fromCol.cards.findIndex(c => c.id === cid);
+          if (cardIdx === -1) return cols;
+          const [card] = fromCol.cards.splice(cardIdx, 1);
+          toCol.cards.push(card);
+          return next;
+        });
+      }
+      dragging.current = null;
+      setDraggingId(null);
+      setDraggingOver(null);
+    };
+
+    window.addEventListener("pointermove", onMove);
+    window.addEventListener("pointerup", onUp);
   }, []);
-
-  const handleDragEnd = useCallback(() => {
-    dragging.current = null;
-    setDraggingId(null);
-    setDraggingOver(null);
-  }, []);
-
-  const handleDragOver = useCallback((columnId) => {
-    setDraggingOver(columnId);
-  }, []);
-
-  const handleDrop = useCallback((toColumnId) => {
-    if (!dragging.current) return;
-    const { cardId, fromColumnId } = dragging.current;
-    if (fromColumnId === toColumnId) { handleDragEnd(); return; }
-
-    setColumns(cols => {
-      const next = cols.map(c => ({ ...c, cards: [...c.cards] }));
-      const fromCol = next.find(c => c.id === fromColumnId);
-      const toCol = next.find(c => c.id === toColumnId);
-      if (!fromCol || !toCol) return cols;
-      const cardIdx = fromCol.cards.findIndex(c => c.id === cardId);
-      if (cardIdx === -1) return cols;
-      const [card] = fromCol.cards.splice(cardIdx, 1);
-      toCol.cards.push(card);
-      return next;
-    });
-
-    handleDragEnd();
-  }, [handleDragEnd]);
 
   const handleAddCard = useCallback((columnId) => {
     setModal({ card: null, columnId });
@@ -436,10 +492,7 @@ export default function KanbanBoard() {
               col={col}
               onAddCard={handleAddCard}
               onEditCard={handleEditCard}
-              onDragStart={handleDragStart}
-              onDragEnd={handleDragEnd}
-              onDragOver={handleDragOver}
-              onDrop={handleDrop}
+              onGrab={handleGrab}
               draggingOver={draggingOver}
               draggingId={draggingId}
             />
