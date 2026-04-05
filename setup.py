@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="streamlit-kanban",
-    version="0.3.0",
+    version="0.3.1",
     author="Dan Sheils",
     author_email="",
     description="A drag-and-drop Kanban board component for Streamlit",
