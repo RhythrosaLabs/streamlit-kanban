@@ -52,6 +52,28 @@ st.write(result)
 - **HTML5 Drag-and-Drop** — native browser API, no library
 - **PyPI** — distributed as `streamlit-kanban`
 
+## The rest of the family
+
+`streamlit-kanban` is one of seven Streamlit components I maintain. If this one fits your app, these probably will too:
+
+| Component | What it does |
+|---|---|
+| [`streamlit-gantt`](https://pypi.org/project/streamlit-gantt/) | Interactive Gantt chart with drag-and-drop task scheduling |
+| [`streamlit-stepper`](https://pypi.org/project/streamlit-stepper/) | Multi-step wizard with validation and progress tracking |
+| [`streamlit-node-editor`](https://pypi.org/project/streamlit-node-editor/) | ComfyUI/Blueprints-style node graph -- typed ports, drag-to-connect |
+| [`streamlit-audio-editor`](https://pypi.org/project/streamlit-audio-editor/) | Browser audio editor and jam recorder -- effects rack, mic input |
+| [`streamlit-nle`](https://pypi.org/project/streamlit-nle/) | Non-linear video editor with a multi-track timeline |
+| [`st-agent-chat`](https://pypi.org/project/st-agent-chat/) | Drop-in agentic AI chat -- tools, extended thinking, subagents |
+
+**Try them all live:** [demo-components.streamlit.app](https://demo-components.streamlit.app)
+
+## Custom components and consulting
+
+I build custom Streamlit components and AI/audio tooling for clients. If you need something in this shape that does not exist yet -- or need one of these extended for your product -- get in touch:
+
+- **Email:** daniel.j.sheils@gmail.com
+- **Portfolio:** [rhythrosalabs.github.io](https://rhythrosalabs.github.io)
+
 ## 🤝 Contributing
 
 PRs welcome. Open an issue first for major changes.
@@ -67,4 +89,10 @@ If streamlit-kanban keeps your project on track, consider supporting development
 👉 [Donate via PayPal](https://paypal.me/noodlebake) — @noodlebake
 
 ---
-<div align="center">Made with ❤️ by <a href="https://github.com/RhythrosaLabs">RhythrosaLabs</a></div>
+<div align="center">
+
+Built by **Daniel Sheils** -- [Rhythrosa Labs](https://rhythrosalabs.github.io) | [GitHub](https://github.com/RhythrosaLabs) | Missoula, MT
+
+*Streamlit Certified Creator*
+
+</div>
