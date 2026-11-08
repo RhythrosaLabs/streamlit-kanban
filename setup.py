@@ -12,6 +12,7 @@ setup(
     project_urls={
         "Homepage": "https://rhythrosalabs.github.io",
         "Source": "https://github.com/RhythrosaLabs/streamlit-kanban",
+        "Portfolio": "https://rhythrosalabs.github.io/",
         "Bug Tracker": "https://github.com/RhythrosaLabs/streamlit-kanban/issues",
         "Changelog": "https://github.com/RhythrosaLabs/streamlit-kanban/blob/main/CHANGELOG.md",
         "Other Streamlit components": "https://pypi.org/user/rhythrosa/",
