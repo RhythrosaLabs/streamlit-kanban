@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.3.3
+
+- Add PyPI project links: Homepage, Source, live component demo, and the other Streamlit components
+- Add author email so the PyPI page has a real contact
+- Add search keywords and Streamlit/developer/widget classifiers for PyPI discoverability
+- README: cross-link the other six Streamlit components and the live demo
+- README: add a custom-components / consulting contact section
+
 ## 0.3.2
 
 - Update SVG screenshot to match actual app UI

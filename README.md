@@ -270,10 +270,33 @@ MIT — see [LICENSE](LICENSE) for details.
 - **Issues:** [https://github.com/RhythrosaLabs/streamlit-kanban/issues](https://github.com/RhythrosaLabs/streamlit-kanban/issues)
 
 
+## The rest of the family
+
+`streamlit-kanban` is one of seven Streamlit components I maintain. If this one fits your app, these probably will too:
+
+| Component | What it does |
+|---|---|
+| [`streamlit-gantt`](https://pypi.org/project/streamlit-gantt/) | Interactive Gantt chart with drag-and-drop task scheduling |
+| [`streamlit-stepper`](https://pypi.org/project/streamlit-stepper/) | Multi-step wizard with validation and progress tracking |
+| [`streamlit-node-editor`](https://pypi.org/project/streamlit-node-editor/) | ComfyUI/Blueprints-style node graph -- typed ports, drag-to-connect |
+| [`streamlit-audio-editor`](https://pypi.org/project/streamlit-audio-editor/) | Browser audio editor and jam recorder -- effects rack, mic input |
+| [`streamlit-nle`](https://pypi.org/project/streamlit-nle/) | Non-linear video editor with a multi-track timeline |
+| [`st-agent-chat`](https://pypi.org/project/st-agent-chat/) | Drop-in agentic AI chat -- tools, extended thinking, subagents |
+
+**Try them all live:** [demo-components.streamlit.app](https://demo-components.streamlit.app)
+
+## Custom components and consulting
+
+I build custom Streamlit components and AI/audio tooling for clients. If you need something in this shape that does not exist yet -- or need one of these extended for your product -- get in touch:
+
+- **Email:** daniel.j.sheils@gmail.com
+- **Portfolio:** [rhythrosalabs.github.io](https://rhythrosalabs.github.io)
+
+
 ## Support
 
 If you find this useful, consider supporting via [PayPal](https://paypal.me/noodlebake)
 
 🌐 [Portfolio: rhythrosalabs.github.io](https://rhythrosalabs.github.io) (more apps, music and sound design)
 
-Built by [Dan Sheils](https://rhythrosalabs.github.io/).
+Built by [Dan Sheils](https://rhythrosalabs.github.io/) · Streamlit Ambassador.
